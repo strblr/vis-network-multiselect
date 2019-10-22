@@ -3,7 +3,7 @@ Adds right-click rectangle-based multiselection to vis-network.
 
 ## Usage
 
-```
+```javascript
 import multiselect from 'vis-network-multiselect'
 
 // Just call once :
