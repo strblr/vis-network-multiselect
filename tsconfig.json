@@ -3,6 +3,8 @@
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
     "outDir": "./lib",
     "strict": true,
     "lib": ["es2018", "dom"]
