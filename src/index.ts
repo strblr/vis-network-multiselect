@@ -1,12 +1,34 @@
-module.exports = ({ container, network, nodes, strokeColor, fillColor }) => {
-  let drag = false, DOMRect = {};
+import { Network, DataSetNodes } from "vis-network";
 
-  const toCanvas = (DOMx, DOMy) => {
+type Args = {
+  container: HTMLDivElement;
+  network: Network;
+  nodes: DataSetNodes;
+  strokeColor: string;
+  fillColor: string;
+};
+
+export default ({
+  container,
+  network,
+  nodes,
+  strokeColor,
+  fillColor
+}: Args) => {
+  let drag = false,
+    DOMRect = {
+      startX: 0,
+      endX: 0,
+      startY: 0,
+      endY: 0
+    };
+
+  const toCanvas = (DOMx: number, DOMy: number) => {
     const { x, y } = network.DOMtoCanvas({ x: DOMx, y: DOMy });
     return [x, y];
-  }
+  };
 
-  const correctRange = (start, end) =>
+  const correctRange = (start: number, end: number) =>
     start < end ? [start, end] : [end, start];
 
   const selectFromDOMRect = () => {
@@ -15,19 +37,20 @@ module.exports = ({ container, network, nodes, strokeColor, fillColor }) => {
     [startX, endX] = correctRange(startX, endX);
     [startY, endY] = correctRange(startY, endY);
 
-    network.selectNodes(nodes.get().reduce(
-      (selected, { id }) => {
-        const { x, y } = network.getPositions(id)[id];
-        return (startX <= x && x <= endX && startY <= y && y <= endY) ?
-          selected.concat(id) : selected;
-      }, []
-    ));
-  }
+    network.selectNodes(
+      nodes.get().reduce((selected, { id }) => {
+        const { x, y } = network.getPositions([id])[id];
+        return startX <= x && x <= endX && startY <= y && y <= endY
+          ? selected.concat(id as string)
+          : selected;
+      }, [] as string[])
+    );
+  };
 
   container.oncontextmenu = () => false;
 
   container.onmousedown = event => {
-    if(event.buttons === 2) {
+    if (event.buttons === 2) {
       Object.assign(DOMRect, {
         startX: event.offsetX,
         startY: event.offsetY,
@@ -39,12 +62,11 @@ module.exports = ({ container, network, nodes, strokeColor, fillColor }) => {
   };
 
   container.onmousemove = event => {
-    if(drag) {
-      if(event.buttons === 0) {
+    if (drag) {
+      if (event.buttons === 0) {
         drag = false;
         network.redraw();
-      }
-      else {
+      } else {
         Object.assign(DOMRect, {
           endX: event.offsetX,
           endY: event.offsetY
@@ -55,15 +77,15 @@ module.exports = ({ container, network, nodes, strokeColor, fillColor }) => {
   };
 
   container.onmouseup = () => {
-    if(drag) {
+    if (drag) {
       drag = false;
       network.redraw();
       selectFromDOMRect();
     }
   };
 
-  network.on('afterDrawing', ctx => {
-    if(drag) {
+  network.on("afterDrawing", (ctx: CanvasRenderingContext2D) => {
+    if (drag) {
       const [startX, startY] = toCanvas(DOMRect.startX, DOMRect.startY);
       const [endX, endY] = toCanvas(DOMRect.endX, DOMRect.endY);
       ctx.setLineDash([6]);
@@ -74,4 +96,4 @@ module.exports = ({ container, network, nodes, strokeColor, fillColor }) => {
       ctx.fillRect(startX, startY, endX - startX, endY - startY);
     }
   });
-}
+};
