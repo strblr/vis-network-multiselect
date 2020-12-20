@@ -1,6 +1,6 @@
 {
   "name": "vis-network-multiselect",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Add right-click rectangle-based multiselection to vis-network",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/ostrebler/vis-network-multiselect#readme",
   "devDependencies": {
-    "typescript": "^3.8.3",
+    "typescript": "^4.1.3",
     "vis-data": "^6.4.1",
     "vis-network": "^7.3.6"
   },

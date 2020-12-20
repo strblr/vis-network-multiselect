@@ -47,9 +47,9 @@ export default ({
     );
   };
 
-  container.oncontextmenu = () => false;
+  const contextMenuListener = () => false
 
-  container.onmousedown = event => {
+  const mouseDownListener = (event: MouseEvent) => {
     if (event.buttons === 2) {
       Object.assign(DOMRect, {
         startX: event.offsetX,
@@ -59,9 +59,9 @@ export default ({
       });
       drag = true;
     }
-  };
+  }
 
-  container.onmousemove = event => {
+  const mouseMoveListener = (event: MouseEvent) => {
     if (drag) {
       if (event.buttons === 0) {
         drag = false;
@@ -74,17 +74,17 @@ export default ({
         network.redraw();
       }
     }
-  };
+  }
 
-  container.onmouseup = () => {
+  const mouseUpListener = () => {
     if (drag) {
       drag = false;
       network.redraw();
       selectFromDOMRect();
     }
-  };
+  }
 
-  network.on("afterDrawing", (ctx: CanvasRenderingContext2D) => {
+  const afterDrawingEvent = (ctx: CanvasRenderingContext2D) => {
     if (drag) {
       const [startX, startY] = toCanvas(DOMRect.startX, DOMRect.startY);
       const [endX, endY] = toCanvas(DOMRect.endX, DOMRect.endY);
@@ -95,5 +95,19 @@ export default ({
       ctx.fillStyle = fillColor;
       ctx.fillRect(startX, startY, endX - startX, endY - startY);
     }
-  });
+  }
+
+  container.addEventListener('contextmenu', contextMenuListener)
+  container.addEventListener('mousedown', mouseDownListener)
+  container.addEventListener('mousemove', mouseMoveListener)
+  container.addEventListener('mouseup', mouseUpListener)
+  network.on("afterDrawing", afterDrawingEvent);
+
+  return () => {
+    container.removeEventListener('contextmenu', contextMenuListener)
+    container.removeEventListener('mousedown', mouseDownListener)
+    container.removeEventListener('mousemove', mouseMoveListener)
+    container.removeEventListener('mouseup', mouseUpListener)
+    network.off("afterDrawing", afterDrawingEvent);
+  }
 };
