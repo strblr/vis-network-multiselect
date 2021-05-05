@@ -47,7 +47,10 @@ export default ({
     );
   };
 
-  const contextMenuListener = () => false
+  const contextMenuListener = (event: MouseEvent) => {
+    event.preventDefault();
+    return false;
+  }
 
   const mouseDownListener = (event: MouseEvent) => {
     if (event.buttons === 2) {
